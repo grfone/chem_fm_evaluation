@@ -638,7 +638,7 @@ class GenerateEmbeddings:
         self._remove_nans_from_csv(fingerprints_csv)
 
     @staticmethod
-    def _remove_nans_from_csv(self, csv_path):
+    def _remove_nans_from_csv(csv_path):
         """
         Remove rows from the given CSV that contain 5 or more NaNs.
 

@@ -34,7 +34,6 @@ class ExtractFiles:
 
         # Expected files
         expected_files = [
-            "allccs.csv",
             "ccsbase.csv",
             "metlinccs1.csv",
             "metlinccs2.csv",
@@ -69,7 +68,7 @@ class UnifyFormats:
     """
     Unified processor for multiple CCS and mobility datasets.
 
-    Standardizes different dataset formats (AllCCS, CCSBase, METLIN-CCS, HMDB, SMRT)
+    Standardizes different dataset formats (CCSBase, METLIN-CCS, Mobility and SMRT)
     into a consistent schema with InChI identifiers, adduct filtering, and CCS/mobility values.
     """
 
@@ -90,55 +89,15 @@ class UnifyFormats:
         csv_path = "resources/all_datasets.csv"
         if os.path.exists(csv_path): return
         # Create the dataframes
-        allccs_df = self.process_allccs_dataset()
         ccsbase_df = self.process_ccsbase_dataset()
         metlinccs1_df = self.process_metlinccs1_dataset()
         metlinccs2_df = self.process_metlinccs2_dataset()
         mobility_df = self.process_mobility_dataset()
         smrt_df = self.process_smrt_dataset()
 
-        datasets = [allccs_df, ccsbase_df, metlinccs1_df, metlinccs2_df, mobility_df, smrt_df]
+        datasets = [ccsbase_df, metlinccs1_df, metlinccs2_df, mobility_df, smrt_df]
         self.merge_and_save(datasets, csv_path)
 
-    def process_allccs_dataset(self, input_file='resources/allccs.csv'):
-        """
-        Process AllCCS dataset with InChI identifiers.
-
-        Args:
-            input_file (str): Path to AllCCS CSV file
-
-        Returns:
-            pandas.DataFrame: Standardized DataFrame with columns:
-                - dataset: 'allccs'
-                - inchi: InChI string
-                - smile: SMILES string
-                - adduct: Filtered adduct type
-                - m/z: Mass-to-charge ratio
-                - ccs: Collision cross section value
-        """
-
-        # Load the allccs.csv file
-        input_df = pd.read_csv(input_file)
-
-        # Filter rows where 'Adduct' is in the allowed list
-        filtered_df = input_df[input_df['Adduct'].isin(self.allowed_adducts)].copy()
-
-        # Create new DataFrame with required columns
-        new_df = pd.DataFrame({
-            'dataset': 'allccs',
-            'inchi': filtered_df['InChI'],
-            'smile': filtered_df['Structure'],
-            'adduct': filtered_df['Adduct'],
-            'm/z': filtered_df['m/z'],
-            'ccs': filtered_df['CCS']
-        })
-
-        # Remove rows where InChI is missing
-        new_df = new_df.dropna(subset=['inchi'])
-
-        print(new_df.head())
-
-        return new_df
 
     def process_ccsbase_dataset(self, input_file='resources/ccsbase.csv'):
         """
